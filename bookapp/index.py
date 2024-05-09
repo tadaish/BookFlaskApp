@@ -9,4 +9,6 @@ def home():
 
 
 if __name__ == "__main__":
+    from bookapp.admin import *
+
     app.run(debug=True)

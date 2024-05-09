@@ -1,5 +1,5 @@
 from enum import Enum as RoleEnum
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Boolean, DateTime, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Boolean, DateTime, Float, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from flask_login import UserMixin
@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
 class Category(db.Model):
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String(50), unique=True, nullable=False)
-    products = relationship('Product', backref='category', lazy=True)
+    books = relationship('Book', backref='category', lazy=True)
 
     def __str__(self):
         return self.name
@@ -37,14 +37,17 @@ class Category(db.Model):
 
 class Book(db.Model):
     id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(String(50), unique=True, nullable=False)
+    title = Column(String(100), unique=True, nullable=False)
     price = Column(Float, default=0)
-    description = Column(String(200))
-    image = Column(String(100))
+    description = Column(Text)
+    author = Column(String(50))
+    year = Column(Integer)
+    image = Column(String(200))
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+    count = Column(Integer)
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class Base(db.Model):
@@ -76,3 +79,34 @@ class Comment(Base):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+
+        # import json
+        #
+        # with open('data/categories.json', encoding='utf-8') as f:
+        #     categories = json.load(f)
+        #     for c in categories:
+        #         cate = Category(**c)
+        #         db.session.add(cate)
+        #
+        # with open('data/books.json', encoding='utf-8') as f:
+        #     books = json.load(f)
+        #     for b in books:
+        #         book = Book(**b)
+        #         db.session.add(book)
+        #
+        # db.session.commit()
+
+        import hashlib
+
+        u = User(name='admin', username='admin',
+                 avatar='https://res.cloudinary.com/dbkmrrnge/image/upload/v1714831198/g8e8yqxvya0vkpmx9kdv.png',
+                 password=str(hashlib.md5("123456".encode('utf-8')).hexdigest()),
+                 user_role=UserRole.ADMIN)
+
+        u2 = User(name='u1', username='u1',
+                  avatar='https://res.cloudinary.com/dbkmrrnge/image/upload/v1714831198/g8e8yqxvya0vkpmx9kdv.png',
+                  password=str(hashlib.md5("123456".encode('utf-8')).hexdigest()),
+                  user_role=UserRole.USER)
+
+        db.session.add_all([u, u2])
+        db.session.commit()
