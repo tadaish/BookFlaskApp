@@ -14,15 +14,19 @@
 <div class="card mt-2">
     <div class="row m-3">
         {% for b in books %}
+
         <div class="col-md-3 col-12" style="padding:0.7rem;">
             <div class="card h-100 book-card">
                 <img src="{{b.image}}" class="card-img-top mt-2" alt="{{b.title}}" width="auto">
                 <div class="card-body">
                     <h5 class="card-title">{{b.title}}</h5>
-                    <p class="card-text">{{ "{:,.0f}".format(b.price) }} VNĐ</p>
+                    <p class="card-text">{{ "{:,.0f}".format(b.price) }} đ</p>
+                    <a href="/books/{{b.id}}" class="stretched-link"></a>
                 </div>
             </div>
         </div>
+
+
         {% endfor %}
     </div>
 </div>

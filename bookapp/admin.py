@@ -14,7 +14,7 @@ class AuthenticatedView(ModelView):
 
 
 class BookView(AuthenticatedView):
-    column_list = ['id', 'title', 'category_id', 'author', 'price', 'year']
+    column_list = ['id', 'title', 'category_id', 'author', 'price', 'year', 'count']
     column_searchable_list = ['id', 'title']
     column_filters = ['id', 'title', 'price']
     column_editable_list = ['title', 'price']
@@ -24,7 +24,8 @@ class BookView(AuthenticatedView):
         'category_id': 'Thể loại',
         'author': 'Tác giả',
         'price': 'Giá',
-        'year': 'Năm XB'
+        'year': 'Năm XB',
+        'count': 'Số lượng'
     }
 
 
@@ -38,10 +39,10 @@ class CategoryView(AuthenticatedView):
 
 
 class UserView(AuthenticatedView):
-    column_list = ['id', 'name', 'username', 'password', 'user_role']
-    column_searchable_list = ['id', 'name', 'username']
+    column_list = ['id', 'fullname', 'username', 'password', 'user_role']
+    column_searchable_list = ['id', 'fullname', 'username']
     column_labels = {
-        'name': 'Tên',
+        'fullname': 'Họ tên',
         'username': 'Tên tài khoản',
         'password': 'Mật khẩu',
         'user_role': 'Vài trò'
@@ -85,5 +86,4 @@ admin = Admin(app, name='Book Administrators', template_mode='bootstrap4', index
 admin.add_view(CategoryView(Category, db.session))
 admin.add_view(BookView(Book, db.session))
 admin.add_view(UserView(User, db.session))
-# admin.add_view(StatsView(name='Thống kê'))
 admin.add_view(LogoutView(name='Đăng xuất'))

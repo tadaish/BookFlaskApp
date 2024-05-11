@@ -1,0 +1,63 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}{{book.title}}{% endblock %}
+
+{% block content %}
+
+<div class="card mb-3 mt-4">
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="{{book.image}}" class="img-fluid  my-3" alt="{{book.title}}">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body mt-2">
+                <h2 class="card-title">{{book.title}}</h2>
+                <div class="row mt-4">
+                    <div class="col">
+                        <p class="card-text fs-5 ">Tác giả: {{book.author}}</p>
+                        <p class="card-text fs-5">Năm xuất bản: {{book.year}}</p>
+                    </div>
+                    <div class="col">
+                        <p class="card-text fs-5">Nhà cung cấp: {{book.supplier}}</p>
+                        <p class="card-text fs-5 ">Nhà xuất bản: {{book.publisher}}</p>
+                    </div>
+                </div>
+                <p class="card-text fs-2  mt-5 text-danger"><b>{{ "{:,.0f}".format(book.price) }} đ</b></p>
+                <div class="w-75 d-flex mt-4">
+                    <span class="fs-4">Số lượng:</span>
+                    <div class="input-group ms-4 w-25">
+                        <input type="number" class="form-control text-center" value="0" min="0" max="{{book.count}}">
+                    </div>
+                </div>
+                <div class="mt-5 gap-4 d-flex">
+                    <button class="btn btn-outline-danger" type="button">Thêm vào giỏ hàng</button>
+                    <button class="btn btn-danger" type="button">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Mô tả: </h4>
+        <p class="card-text fs-6">{{book.description}}</p>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h4 class="card-title">Đánh giá</h4>
+        {% if current_user.is_authenticated and current_user.user_role != role.ADMIN %}
+        <div>
+            <button class="btn btn-outline-danger" type="button"><i class="bi bi-pencil"> Viết đánh giá</i></button>
+        </div>
+        {% else %}
+        <p class="fs-6 mt-4">Bạn phải <a class="text-primary text-decoration-none" href="">đăng
+            nhập</a> hoặc <a href=""
+                             class="text-primary text-decoration-none"> đăng ký</a> để đánh
+            giá</p>
+        {% endif%}
+    </div>
+</div>
+{% endblock%}

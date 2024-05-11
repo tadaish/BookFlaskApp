@@ -11,7 +11,7 @@
             <ul class="navbar-nav me-auto mb-5 mb-lg-0 fs-4 ms-5 ">
                 {% for c in categories %}
                 <li class="nav-item me-1">
-                    <a class="nav-link active" aria-current="page" href="#">{{c.name}}</a>
+                    <a class="nav-link active" aria-current="page" href="/?category_id={{c.id}}">{{c.name}}</a>
                 </li>
                 {% endfor %}
             </ul>
@@ -31,16 +31,16 @@
                     <span>Tài khoản</span>
 
                     <ul class="dropdown-menu inline">
-                        {% if (current_user.is_authenticated) and
-                        (current_user.user_role == 'ADMIN')%}
+                        {% if current_user.is_authenticated and
+                        current_user.user_role != role.ADMIN%}
                         <li><a class="dropdown-item" href="#">Chào {{current_user.username}}</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li><a class="dropdown-item" href="#">Xem đơn hàng</a></li>
-                        <li><a class="dropdown-item text-danger" href="#">Đăng xuất</a></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Đăng xuất</a></li>
                         {% else %}
-                        <li><a class="dropdown-item text-success" href="#">Đăng nhập</a></li>
+                        <li><a class="dropdown-item text-success" href="/login">Đăng nhập</a></li>
                         <li><a class="dropdown-item text-primary" href="#">Đăng ký</a></li>
                         {% endif%}
                     </ul>

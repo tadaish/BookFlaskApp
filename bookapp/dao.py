@@ -1,7 +1,8 @@
-from bookapp.models import User, Category, Book, Receipt
+from bookapp.models import User, Category, Book, Receipt, Comment
 import hashlib
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from bookapp import app, db
+from flask_login import current_user
 
 
 def get_user_by_id(id):
@@ -40,7 +41,7 @@ def load_books(q=None, cate_id=None, page=None):
     query = Book.query
 
     if q:
-        query = query.filter(Book.name.contains(q) or Book.author.contains(q))
+        query = query.filter(Book.title.contains(q))
 
     if cate_id:
         query = query.filter(Book.category_id.__eq__(cate_id))
@@ -55,3 +56,15 @@ def load_books(q=None, cate_id=None, page=None):
 
 def get_book_by_id(id):
     return Book.query.get(id)
+
+
+def add_comment(content, book_id):
+    c = Comment(cotent=content, book_id=book_id, user=current_user)
+    db.session.add(c)
+    db.session.commit()
+
+    return c
+
+
+def get_comments(book_id):
+    return Comment.query.filter(Comment.book_id.__eq__(book_id)).order_by(-Comment.id)

@@ -14,11 +14,14 @@ class UserRole(RoleEnum):
 
 class User(db.Model, UserMixin):
     id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(String(100))
+    fullname = Column(String(100))
     avatar = Column(String(100))
     username = Column(String(50), unique=True)
     password = Column(String(50))
     user_role = Column(Enum(UserRole), default=UserRole.USER)
+    phone = Column(Integer, unique=True)
+    email = Column(String(50))
+    address = Column(String(200))
     receipts = relationship('Receipt', backref='user', lazy=True)
     comments = relationship('Comment', backref='user', lazy=True)
 
@@ -44,6 +47,8 @@ class Book(db.Model):
     year = Column(Integer)
     image = Column(String(200))
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+    supplier = Column(String(50))
+    publisher = Column(String(50))
     count = Column(Integer)
 
     def __str__(self):
@@ -71,6 +76,7 @@ class ReceiptDetails(Base):
 
 
 class Comment(Base):
+    star = Column(Integer, nullable=False)
     content = Column(String(255), nullable=False)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
@@ -96,17 +102,19 @@ if __name__ == '__main__':
         #
         # db.session.commit()
 
-        import hashlib
-
-        u = User(name='admin', username='admin',
-                 avatar='https://res.cloudinary.com/dbkmrrnge/image/upload/v1714831198/g8e8yqxvya0vkpmx9kdv.png',
-                 password=str(hashlib.md5("123456".encode('utf-8')).hexdigest()),
-                 user_role=UserRole.ADMIN)
-
-        u2 = User(name='u1', username='u1',
-                  avatar='https://res.cloudinary.com/dbkmrrnge/image/upload/v1714831198/g8e8yqxvya0vkpmx9kdv.png',
-                  password=str(hashlib.md5("123456".encode('utf-8')).hexdigest()),
-                  user_role=UserRole.USER)
-
-        db.session.add_all([u, u2])
-        db.session.commit()
+        # import hashlib
+        #
+        # u = User(fullname='admin', username='admin',
+        #          avatar='https://res.cloudinary.com/dbkmrrnge/image/upload/v1714831198/g8e8yqxvya0vkpmx9kdv.png',
+        #          password=str(hashlib.md5("123456".encode('utf-8')).hexdigest()),
+        #          user_role=UserRole.ADMIN)
+        #
+        # u2 = User(fullname='u1', username='u1',
+        #           avatar='https://res.cloudinary.com/dbkmrrnge/image/upload/v1714831198/g8e8yqxvya0vkpmx9kdv.png',
+        #           phone='341241415',
+        #           email='u123@gmail.com',
+        #           password=str(hashlib.md5("123456".encode('utf-8')).hexdigest()),
+        #           user_role=UserRole.USER)
+        #
+        # db.session.add_all([u, u2])
+        # db.session.commit()
