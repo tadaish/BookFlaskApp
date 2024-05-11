@@ -1,0 +1,64 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand ms-5" href="/"><img
+                src="https://res.cloudinary.com/dbkmrrnge/image/upload/v1715362685/logo_transparent_ymhck9.png"
+                width="auto" height="125px"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-5 mb-lg-0 fs-4 ms-5 ">
+                {% for c in categories %}
+                <li class="nav-item me-1">
+                    <a class="nav-link active" aria-current="page" href="#">{{c.name}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="w-25 me-4">
+                <form class="d-flex mt-1" method="get" action="/">
+                    <input class="form-control me-2 fs-5" name="q" type="text" placeholder="Nhập từ khóa...">
+                    <button class="btn fs-5" type="submit" style="margin-left:-50px"><i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="me-5 d-flex gap-4 ">
+                <div class="mt-2  dropdown">
+                    <div data-bs-toggle="dropdown" role="button">
+                        <i class="bi bi-person fs-3 ms-3"></i>
+
+                    </div>
+                    <span>Tài khoản</span>
+
+                    <ul class="dropdown-menu inline">
+                        {% if (current_user.is_authenticated) and
+                        (current_user.user_role == 'ADMIN')%}
+                        <li><a class="dropdown-item" href="#">Chào {{current_user.username}}</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Xem đơn hàng</a></li>
+                        <li><a class="dropdown-item text-danger" href="#">Đăng xuất</a></li>
+                        {% else %}
+                        <li><a class="dropdown-item text-success" href="#">Đăng nhập</a></li>
+                        <li><a class="dropdown-item text-primary" href="#">Đăng ký</a></li>
+                        {% endif%}
+                    </ul>
+
+
+                </div>
+                <div class="d-flex-column mt-2">
+                    <div>
+                        <i class="bi bi-bag fs-3 ms-3"></i>
+                        <sup class="fs-6 text-success"></sup>
+                    </div>
+                    <span>Giỏ hàng</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+</nav>

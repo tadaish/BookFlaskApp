@@ -1,14 +1,19 @@
 from flask_admin import Admin, expose, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import BaseView
-from bookapp.models import Category, Book, UserRole
-from bookapp import app, db
+from bookapp.models import Category, Book, UserRole, User
+from bookapp import app, db, dao
 from flask_login import logout_user, current_user
 from flask import redirect, request
 from datetime import datetime
 
 
-class MyBookView(ModelView):
+class AuthenticatedView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
+
+
+class BookView(AuthenticatedView):
     column_list = ['id', 'title', 'category_id', 'author', 'price', 'year']
     column_searchable_list = ['id', 'title']
     column_filters = ['id', 'title', 'price']
@@ -23,8 +28,24 @@ class MyBookView(ModelView):
     }
 
 
-class MyCategoryView(ModelView):
+class CategoryView(AuthenticatedView):
     column_list = ['id', 'name', 'books']
+    column_searchable_list = ['id', 'name']
+    column_labels = {
+        'name': 'Thể loại',
+        'books': 'Sách'
+    }
+
+
+class UserView(AuthenticatedView):
+    column_list = ['id', 'name', 'username', 'password', 'user_role']
+    column_searchable_list = ['id', 'name', 'username']
+    column_labels = {
+        'name': 'Tên',
+        'username': 'Tên tài khoản',
+        'password': 'Mật khẩu',
+        'user_role': 'Vài trò'
+    }
 
 
 # class StatsView(BaseView):
@@ -52,15 +73,17 @@ class LogoutView(BaseView):
         return current_user.is_authenticated
 
 
-# class MyAdminIndexView(AdminIndexView):
-#     @expose('/')
-#     def index(self):
-#         stats = dao.count_products_by_cate()
-#         return self.render('admin/index.html', stats=stats)
+class MyAdminIndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        stats = dao.count_books_by_cate()
+        count = dao.get_count()
+        return self.render('admin/index.html', stats=stats, count=count)
 
 
-admin = Admin(app, name='E-commerce Website', template_mode='bootstrap4')
-admin.add_view(MyCategoryView(Category, db.session))
-admin.add_view(MyBookView(Book, db.session))
+admin = Admin(app, name='Book Administrators', template_mode='bootstrap4', index_view=MyAdminIndexView())
+admin.add_view(CategoryView(Category, db.session))
+admin.add_view(BookView(Book, db.session))
+admin.add_view(UserView(User, db.session))
 # admin.add_view(StatsView(name='Thống kê'))
-# admin.add_view(LogoutView(name='Đăng xuất'))
+admin.add_view(LogoutView(name='Đăng xuất'))
