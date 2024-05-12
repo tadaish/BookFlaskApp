@@ -1,8 +1,11 @@
 import math
+
+import cloudinary.uploader
 from flask import render_template, request, redirect, jsonify
 from bookapp import app, login, dao
-from flask_login import login_user, logout_user, logged
+from flask_login import login_user, logout_user
 from bookapp.models import UserRole
+from bookapp.decorators import loggedin
 
 
 @app.route('/')
@@ -14,7 +17,7 @@ def index():
     books = dao.load_books(q=q, cate_id=cate_id, page=page)
     count = dao.get_count()
 
-    return render_template('index.html', books=books, pages=math.ceil(count[1] / app.config['PAGE_SIZE']))
+    return render_template('index.html', books=books, pages=math.ceil(count[1] / app.config['PAGE_SIZE']), page=page)
 
 
 @login.user_loader
@@ -59,7 +62,7 @@ def add_comment(id):
     }})
 
 
-@app.route('/login')
+@app.route('/login', methods=['post', 'get'])
 def login():
     err_msg = ""
     if request.method.__eq__('POST'):
@@ -83,6 +86,34 @@ def logout():
     logout_user()
     next = request.args.get('next')
     return redirect(next if next else '/')
+
+
+@app.route('/register', methods=['post', 'get'])
+@loggedin
+def register_user():
+    err_msg = None
+    if request.method.__eq__('POST'):
+        password = request.form.get('password')
+        confirm_pass = request.form.get('confirm_pass')
+        if password.__eq__(confirm_pass):
+            avatar_path = None
+            avatar = request.files.get('avatar')
+            if avatar:
+                res = cloudinary.uploader.upload(avatar)
+                avatar_path = res['secure_url']
+            dao.add_user(fullname=request.form.get('name'),
+                         username=request.form.get('username'),
+                         password=request.form.get('password'),
+                         email=request.form.get('email'),
+                         phone=request.form.get('phone'),
+                         address=request.form.get('address'),
+                         avatar=avatar_path
+                         )
+            return redirect('/login')
+        else:
+            err_msg = 'Mật khẩu không khớp'
+
+    return render_template('register.html', err_msg=err_msg)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,62 @@
+{% extends 'layout/base.html'%}
+
+{% block title %}Đăng ký{% endblock %}
+
+{% block content %}
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="card-title fs-3 text-center">Tạo tài khoản</div>
+        <form method="post" action="/register" enctype="multipart/form-data">
+            <div class="row g-3 mt-3 justify-content-center">
+                <div class="col-md-4">
+                    <label for="fullname" class="form-label">Họ tên</label>
+                    <input type="text" class="form-control" id="fullname" name="fullname" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="username" class="form-label">Tên tài khoản</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+            </div>
+
+            <div class="row  justify-content-center mt-3">
+                <div class="col-md-4">
+                    <label for="password" class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="confirm_pass" class="form-label">Xác nhận mật khẩu</label>
+                    <input type="password" class="form-control" id="confirm_pass" name="confirm_pass" required>
+                </div>
+            </div>
+
+            <div class="row  justify-content-center mt-3">
+                <div class="col-md-4">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="phone" class="form-label">Số điện thoại</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-8">
+                    <label for="address" class="form-label">Địa chỉ</label>
+                    <input type="text" class="form-control" id="address" name="address" required>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-8 mt-3">
+                    <label for="avatar" class="form-label">Chọn avatar của bạn</label>
+                    <input class="form-control" type="file" id="avatar" name="avatar">
+
+                </div>
+            </div>
+
+            <div class="col-12 text-center mt-4">
+                <button class="btn btn-primary" type="submit">Đăng ký</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock%}

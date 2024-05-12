@@ -68,3 +68,11 @@ def add_comment(content, book_id):
 
 def get_comments(book_id):
     return Comment.query.filter(Comment.book_id.__eq__(book_id)).order_by(-Comment.id)
+
+
+def add_user(fullname, username, password, email, phone, address, avatar):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    u = User(fullname=fullname, username=username, password=password, email=email, phone=phone, address=address,
+             avatar=avatar)
+    db.session.add(u)
+    db.session.commit()
