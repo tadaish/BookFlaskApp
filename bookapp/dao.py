@@ -59,7 +59,7 @@ def get_book_by_id(id):
 
 
 def add_comment(content, book_id):
-    c = Comment(cotent=content, book_id=book_id, user=current_user)
+    c = Comment(content=content, book_id=book_id, user=current_user)
     db.session.add(c)
     db.session.commit()
 

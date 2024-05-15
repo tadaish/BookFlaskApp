@@ -76,8 +76,7 @@ class ReceiptDetails(Base):
 
 
 class Comment(Base):
-    star = Column(Integer, nullable=False)
-    content = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
 

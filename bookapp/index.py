@@ -52,17 +52,6 @@ def details(id):
     return render_template('book-detail.html', book=book, comments=comments)
 
 
-@app.route('/api/books/<int:id>/comments', methods=['post'])
-def add_comment(id):
-    data = request.json
-    c = dao.add_comment(content=data.get('content'), book_id=id)
-
-    return jsonify({'id': c.id, 'content': c.content, 'user': {
-        'username': c.user.username,
-        'avatar': c.user.avatar
-    }})
-
-
 @app.route('/login', methods=['post', 'get'])
 def login():
     err_msg = ""
@@ -185,6 +174,14 @@ def pay():
     else:
         del session['cart']
         return jsonify({'status': 200})
+
+
+@app.route('/api/books/<int:id>/comments', methods=['post'])
+def add_comment(id):
+    data = request.json
+    c = dao.add_comment(content=data.get('content'), book_id=id)
+
+    return jsonify({'status': 200})
 
 
 if __name__ == "__main__":

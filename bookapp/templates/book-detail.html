@@ -3,7 +3,7 @@
 {% block title %}{{book.title}}{% endblock %}
 
 {% block content %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='style/star.css') }}">
 <div class="card mb-3 mt-4">
     <div class="row g-0">
         <div class="col-md-4">
@@ -53,8 +53,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -69,34 +67,33 @@
 
 <div class="card mt-3">
     <div class="card-body">
-        <h4 class="card-title">Đánh giá</h4>
+        <h4 class="card-title">Bình luận</h4>
         {% if current_user.is_authenticated and current_user.user_role != role.ADMIN %}
         <div>
-            <button class="btn btn-outline-danger" type="button" data-bs-toggle="modal" data-bs-target="#commentModal">
+            <button class="btn btn-outline-danger mt-2" type="button" data-bs-toggle="modal"
+                    data-bs-target="#commentModal">
                 <i class="bi bi-pencil"> Viết đánh giá</i></button>
         </div>
         <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Bình luận</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Recipient:</label>
-                                <input type="text" class="form-control" id="recipient-name">
-                            </div>
-                            <div class="mb-3">
-                                <label for="message-text" class="col-form-label">Message:</label>
-                                <textarea class="form-control" id="message-text"></textarea>
+                                <label for="content" class="col-form-label">Bình luận:</label>
+                                <textarea class="form-control" id="content"
+                                          placeholder="Nhập nội dung bình luận ở đây..."
+                                          rows="5" cols="33"></textarea>
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Send message</button>
+                    <div class="text-center mb-3">
+                        <button type="button" class="btn btn-primary w-25" onclick="addComment({{book.id}})">Đăng
+                        </button>
                     </div>
                 </div>
             </div>
@@ -105,6 +102,39 @@
         <p class="fs-6 mt-4">Bạn phải <a class="text-primary text-decoration-none" href="/login ">đăng
             nhập</a> hoặc <a href="/register" class="text-primary text-decoration-none"> đăng ký</a> để đánh giá</p>
         {% endif%}
+        {% if c in comments %}
+        <hr>
+        {% endif %}
+        {% for c in comments %}
+        <hr>
+        <div class="row mt-2">
+            <div class="col-md-3 d-flex gap-3">
+                <div>
+                    <img class="img rounded-circle"
+                         src="{{ c.user.avatar }}" height="50px" width="auto"/>
+                </div>
+                <div>
+                    <p class="fs-5 fw-semibold">{{c.user.username}}</p>
+                    <small>{{c.created_date}}</small>
+                </div>
+            </div>
+            <div class="col">
+                <p class="fs-6">{{c.content}}</p>
+            </div>
+        </div>
+
+        {% endfor %}
+
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js"></script>
+<script src="{{ url_for('static', filename='js/addComment.js') }}"></script>
+<script>
+    window.onload = function() {
+        let dates = document.getElementsByClassName("created-date");
+        for (let d of dates)
+            d.innerText = moment(d.innerText).locale('vi')
+    }
+</script>
 {% endblock%}
