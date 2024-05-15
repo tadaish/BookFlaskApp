@@ -1,4 +1,4 @@
-from bookapp.models import User, Category, Book, Receipt, Comment
+from bookapp.models import User, Category, Book, Receipt, Comment, ReceiptDetails
 import hashlib
 from sqlalchemy import func, or_
 from bookapp import app, db
@@ -68,6 +68,19 @@ def add_comment(content, book_id):
 
 def get_comments(book_id):
     return Comment.query.filter(Comment.book_id.__eq__(book_id)).order_by(-Comment.id)
+
+
+def add_receipt(cart):
+    if cart:
+        r = Receipt(user=current_user)
+        db.session.add(r)
+
+        for c in cart.values():
+            d = ReceiptDetails(quantity=c['quantity'], unit_price=c['price'],
+                               receipt=r, book_id=c['id'])
+            db.session.add(d)
+
+        db.session.commit()
 
 
 def add_user(fullname, username, password, email, phone, address, avatar):

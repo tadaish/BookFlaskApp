@@ -1,9 +1,9 @@
 import math
 
 import cloudinary.uploader
-from flask import render_template, request, redirect, jsonify
-from bookapp import app, login, dao
-from flask_login import login_user, logout_user
+from flask import render_template, request, redirect, jsonify, session
+from bookapp import app, login, dao, utils
+from flask_login import login_user, logout_user, login_required
 from bookapp.models import UserRole
 from bookapp.decorators import loggedin
 
@@ -41,6 +41,7 @@ def common_attributes():
     return {
         'categories': dao.load_categories(),
         'role': UserRole,
+        'cart_stats': utils.count_cart(session.get('cart'))
     }
 
 
@@ -72,7 +73,10 @@ def login():
         user = dao.auth_user(username, password)
 
         if user:
-            login_user(user)
+            if user.user_role != UserRole.ADMIN:
+                login_user(user)
+            else:
+                return redirect('/admin')
 
             next = request.args.get('next')
             return redirect(next if next else '/')
@@ -114,6 +118,73 @@ def register_user():
             err_msg = 'Mật khẩu không khớp'
 
     return render_template('register.html', err_msg=err_msg)
+
+
+@app.route('/cart')
+def cart():
+    return render_template('cart.html')
+
+
+@app.route('/api/carts', methods=['post'])
+def add_to_cart():
+    cart = session.get('cart')
+    if not cart:
+        cart = {}
+
+    id = str(request.json.get('id'))
+    if id in cart:
+        cart[id]["quantity"] += request.json['quantity']
+    else:
+        cart[id] = {
+            "id": id,
+            "title": request.json.get("title"),
+            "price": request.json.get("price"),
+            "quantity": request.json.get('quantity'),
+            "image": request.json.get("image")
+        }
+
+    session['cart'] = cart
+
+    return jsonify(utils.count_cart(cart))
+
+
+@app.route('/api/cart/<book_id>', methods=['put'])
+def update_cart(book_id):
+    cart = session.get('cart')
+    if cart and book_id in cart:
+        cart[book_id]['quantity'] = request.json['quantity']
+        session['cart'] = cart
+
+    return jsonify(utils.count_cart(cart))
+
+
+@app.route('/api/cart/<book_id>', methods=['delete'])
+def delete_cart(book_id):
+    cart = session.get('cart')
+    if cart and book_id in cart:
+        del cart[book_id]
+        session['cart'] = cart
+
+    return jsonify(utils.count_cart(cart))
+
+
+@app.route('/pay')
+def pay_index():
+    return render_template('pay.html')
+
+
+@app.route("/api/pay", methods=['post'])
+@login_required
+def pay():
+    cart = session.get('cart')
+    try:
+        dao.add_receipt(cart)
+    except Exception as ex:
+        print(ex)
+        return jsonify({'status': 500})
+    else:
+        del session['cart']
+        return jsonify({'status': 200})
 
 
 if __name__ == "__main__":

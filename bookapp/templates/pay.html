@@ -1,0 +1,100 @@
+{% extends 'layout/base.html'%}
+
+{% block title %}Xác nhận thanh toán{% endblock %}
+
+{% block content %}
+
+<div class="card mt-3">
+    <div class="card-header fs-5 fw-bold">
+        Địa chỉ giao hàng
+    </div>
+    <div class="card-body">
+        <div class="fs-5">
+            <p>Họ tên người nhận: {{current_user.fullname}}</p>
+            <p>Email: {{current_user.email}}</p>
+            <p>Số điện thoại: {{current_user.phone}}</p>
+            <p>Địa chỉ nhận hàng: {{current_user.address}}</p>
+        </div>
+    </div>
+</div>
+<div class="card mt-3 ">
+    <div class="card-header fs-5 fw-bold">Phương thức vận chuyển</div>
+    <div class="card-body fs-5">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" checked>
+            <label class="form-check-label text-success">
+                Tiêu chuẩn | 19,000 đ
+                <p>
+                    <small id="delivery_day"></small>
+                </p>
+            </label>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/getDate.js') }}"></script>
+<div class="card mt-3">
+    <div class="card-header fw-bold fs-5">Phương thức thanh toán</div>
+    <div class="card-body fs-5">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
+            <label class="form-check-label" for="flexRadioDefault1">
+                <i class="bi bi-cash-stack "></i>
+                Thanh toán bằng tiền mặt khi nhận hàng
+            </label>
+        </div>
+    </div>
+</div>
+<div class="card mt-3">
+    <div class="card-header fw-bold fs-5">Xác nhận lại đơn hàng</div>
+    <div class="card-body fs-5">
+        {% for c in session['cart'].values() %}
+        <div class="row">
+            <div class="d-flex text-wrap col-md-7 ">
+                <img src="{{c.image}}" height="150">
+                <p class="fs-5">{{c.title}}</p>
+            </div>
+            <div style="" class="col-md-2  ">
+                <p>{{c.quantity}}</p>
+            </div>
+            <div class="col-md-2 ms-4">
+                <p class="text-danger fw-semibold">{{"{:,.0f}".format(c.price * c.quantity)}}đ</p>
+            </div>
+        </div>
+        {% if not loop.last %}
+        <hr>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="d-flex flex-column align-items-end fw-semibold fs-5">
+            <span>Thành tiền: {{"{:,.0f}".format(cart_stats.total_amount)}} đ</span>
+            <span>Phí vận chuyển: {{"{:,.0f}".format(19000)}} đ</span>
+            <span>Tổng số tiền: <span
+                    class="text-danger">{{"{:,.0f}".format(cart_stats.total_amount + 19000)}} đ </span></span>
+        </div>
+        <hr>
+        <div class="d-flex">
+            <a class="nav-link text-secondary" href="/cart">
+                <i class="bi bi-arrow-left fs-5 me-1"></i>
+                <span class=" fs-5">Quay về giỏ hàng</span>
+            </a>
+            <a class="btn btn-danger fs-5 ms-auto" onclick="pay()">Xác nhận thanh toán</a>
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="text-center">
+                                <i class="bi bi-check-circle text-success fs-1"></i>
+                            </div>
+                            <p class="text-center fs-2 text-success">Thanh toán thành công</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

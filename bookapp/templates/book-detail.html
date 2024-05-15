@@ -26,18 +26,40 @@
                 <div class="w-75 d-flex mt-4">
                     <span class="fs-4">Số lượng:</span>
                     <div class="input-group ms-4 w-25">
-                        <input type="number" class="form-control text-center" value="0" min="0" max="{{book.count}}">
+                        <input type="number" id="quantity" class="form-control text-center" value="1" min="1"
+                               max="{{book.count}}">
                     </div>
                 </div>
                 <div class="mt-5 gap-4 d-flex">
-                    <button class="btn btn-outline-danger" type="button">Thêm vào giỏ hàng</button>
-                    <button class="btn btn-danger" type="button">Mua ngay</button>
+                    <a href="javascript:;"
+                       onclick="addToCart( {{book.id}}, '{{book.title|escape}}', {{book.price}}, '{{book.image}}' )">
+                        <button class="btn btn-outline-danger fs-5" type="button" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">Thêm vào giỏ hàng
+                        </button>
+                    </a>
+                    <a href="/cart">
+                        <button class="btn btn-danger fs-5" type="button">Mua ngay</button>
+                    </a>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="text-center">
+                                        <i class="bi bi-check-circle text-success fs-1"></i>
+                                    </div>
+                                    <p class="text-center fs-2 text-success">Thêm thành công</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <div class="card">
     <div class="card-body">
         <h4 class="card-title">Mô tả: </h4>
@@ -50,13 +72,38 @@
         <h4 class="card-title">Đánh giá</h4>
         {% if current_user.is_authenticated and current_user.user_role != role.ADMIN %}
         <div>
-            <button class="btn btn-outline-danger" type="button"><i class="bi bi-pencil"> Viết đánh giá</i></button>
+            <button class="btn btn-outline-danger" type="button" data-bs-toggle="modal" data-bs-target="#commentModal">
+                <i class="bi bi-pencil"> Viết đánh giá</i></button>
+        </div>
+        <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">Recipient:</label>
+                                <input type="text" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">Message:</label>
+                                <textarea class="form-control" id="message-text"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Send message</button>
+                    </div>
+                </div>
+            </div>
         </div>
         {% else %}
-        <p class="fs-6 mt-4">Bạn phải <a class="text-primary text-decoration-none" href="/register">đăng
-            nhập</a> hoặc <a href="/register"
-                             class="text-primary text-decoration-none"> đăng ký</a> để đánh
-            giá</p>
+        <p class="fs-6 mt-4">Bạn phải <a class="text-primary text-decoration-none" href="/login ">đăng
+            nhập</a> hoặc <a href="/register" class="text-primary text-decoration-none"> đăng ký</a> để đánh giá</p>
         {% endif%}
     </div>
 </div>
