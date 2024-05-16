@@ -13,8 +13,8 @@ def index():
     q = request.args.get('q')
     cate_id = request.args.get('category_id')
     page = request.args.get('page')
-
-    books = dao.load_books(q=q, cate_id=cate_id, page=page)
+    order = request.args.get('order')
+    books = dao.load_books(q=q, cate_id=cate_id, page=page, order=order)
     count = dao.get_count()
 
     return render_template('index.html', books=books, pages=math.ceil(count[1] / app.config['PAGE_SIZE']), page=page)

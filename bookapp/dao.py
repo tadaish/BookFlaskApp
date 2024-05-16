@@ -1,6 +1,6 @@
 from bookapp.models import User, Category, Book, Receipt, Comment, ReceiptDetails
 import hashlib
-from sqlalchemy import func, or_
+from sqlalchemy import func, desc
 from bookapp import app, db
 from flask_login import current_user
 
@@ -37,8 +37,8 @@ def load_categories():
     return Category.query.all()
 
 
-def load_books(q=None, cate_id=None, page=None):
-    query = Book.query
+def load_books(q=None, cate_id=None, page=None, order=None):
+    query = Book.query.order_by(-Book.id)
 
     if q:
         query = query.filter(Book.title.contains(q))
@@ -50,6 +50,21 @@ def load_books(q=None, cate_id=None, page=None):
         page_size = app.config['PAGE_SIZE']
         start = (int(page) - 1) * page_size
         query = query.slice(start, start + page_size)
+
+    if order:
+        if order == 'best-selling':
+            query = db.session.query(Book.id, Book.title, Book.price, Book.image,
+                                     func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price)).join(Book,
+                                                                                                         Book.id.__eq__(
+                                                                                                             ReceiptDetails.book_id),
+                                                                                                         isouter=True).group_by(
+                Book.id).order_by(func.sum(-ReceiptDetails.quantity * ReceiptDetails.unit_price))
+
+        if order == 'min-price':
+            query = Book.query.order_by(Book.price)
+
+        if order == 'max-price':
+            query = Book.query.order_by(-Book.price)
 
     return query.all()
 
