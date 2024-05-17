@@ -32,15 +32,23 @@
     <div class="card shadow" style="width: 12rem;">
         <div class="card-body">
             <h5 class="card-title">Tổng doanh thu</h5>
-            <p class="card-text"></p>
+            <p class="card-text">{{"{:,.0f}".format(count[4])}} đ</p>
         </div>
     </div>
 </div>
-<div class="row card mt-5">
-    <div class="col-md-7 col-12 mt-5">
-        <canvas id="myChart" width="200" height="200"></canvas>
+<div class="card mt-5">
+    <div class="row card-body mt-5">
+        <div class="col-md-5 col-12">
+            <canvas id="chart1"></canvas>
+            <p class="text-center">Số lượng sách của mỗi thể loại</p>
+        </div>
+        <div class="col-md-5 col-12 ">
+            <canvas id="chart2"></canvas>
+            <p class="text-center">Doanh thua theo thể loại</p>
+        </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/stats.js') }}"></script>
@@ -51,10 +59,18 @@
         data.push({{ s[2] }});
         labels.push('{{ s[1] }}');
     {% endfor %}
+       let labels2 = [];
+    let data2 = [];
+    {% for s in rev_cat %}
+        data2.push({{ s.total_revenue }});
+        labels2.push('{{ s.cate_name }}');
+    {% endfor %}
     window.onload = function() {
-        drawChart("pie", data, labels);
+        drawChart1("pie", data, labels);
+        drawChart2("bar", data2, labels2);
     }
 </script>
+
 {% else %}
 <h2 class="text-center text-info mt-5">Đăng nhập</h2>
 <form method="post" action="/admin-login">

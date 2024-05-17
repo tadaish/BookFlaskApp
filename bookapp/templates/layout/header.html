@@ -33,7 +33,11 @@
                     <ul class="dropdown-menu inline">
                         {% if current_user.is_authenticated and
                         current_user.user_role != role.ADMIN%}
-                        <li><a class="dropdown-item" href="#">Chào {{current_user.username}}</a></li>
+                        <li class="d-flex">
+                            <a class="dropdown-item w-75" href="/user/user-info">
+                                Chào {{current_user.username}} <i class="bi bi-arrow-right fs-5 ms-5"></i>
+                            </a>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

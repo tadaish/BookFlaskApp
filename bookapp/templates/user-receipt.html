@@ -1,0 +1,57 @@
+{% extends 'layout/base.html'%}
+
+{% block title %}Tài khoản{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-3">
+        <ul class="list-group">
+            <li class="list-group-item fs-4 text-danger">Tài khoản</li>
+            <li class="list-group-item"><a class="nav-link" href="/user/user-info">Thông tin tài
+                khoản</a></li>
+            <li class="list-group-item active"><a class="nav-link" href="/user/user-receipt">Đơn
+                hàng của
+                tôi</a>
+            </li>
+        </ul>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h3>Đơn hàng của tôi</h3>
+                <div class="mt-3">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Mã đơn hàng</th>
+                            <th scope="col">Người nhận</th>
+                            <th scope="col">Tổng tiền</th>
+                            <th scope="col">Ngày mua</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for r in receipts%}
+                        <tr>
+                            <th scope="row">{{r.id}}</th>
+                            <td>{{r.name}}</td>
+                            <td>{{"{:,.0f}".format(r.total_amount)}} đ</td>
+                            <td class="date">{{r.created_date}}</td>
+                        </tr>
+                        {% endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.onload = function() {
+        let createdDates = document.getElementsByClassName('date');
+        for (let d of createdDates){
+            var date = new Date(d.innerText);
+             d.innerText = date.toLocaleDateString('vn-VN');
+        };
+    }
+</script>
+{% endblock %}

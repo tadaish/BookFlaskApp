@@ -27,8 +27,9 @@ def get_count():
     total_book = Book.query.count()
     total_user = User.query.count()
     total_receipt = Receipt.query.count()
+    total_revenue = db.session.query(func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price)).scalar()
 
-    count.extend((total_cate, total_book, total_user, total_receipt))
+    count.extend((total_cate, total_book, total_user, total_receipt, total_revenue))
 
     return count
 
@@ -54,11 +55,11 @@ def load_books(q=None, cate_id=None, page=None, order=None):
     if order:
         if order == 'best-selling':
             query = db.session.query(Book.id, Book.title, Book.price, Book.image,
-                                     func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price)).join(Book,
-                                                                                                         Book.id.__eq__(
-                                                                                                             ReceiptDetails.book_id),
-                                                                                                         isouter=True).group_by(
-                Book.id).order_by(func.sum(-ReceiptDetails.quantity * ReceiptDetails.unit_price))
+                                     func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price)
+                                     ).join(Book, Book.id.__eq__(ReceiptDetails.book_id), isouter=True
+                                            ).group_by(Book.id
+                                                       ).order_by(
+                func.sum(-ReceiptDetails.quantity * ReceiptDetails.unit_price))
 
         if order == 'min-price':
             query = Book.query.order_by(Book.price)
@@ -103,4 +104,41 @@ def add_user(fullname, username, password, email, phone, address, avatar):
     u = User(fullname=fullname, username=username, password=password, email=email, phone=phone, address=address,
              avatar=avatar)
     db.session.add(u)
+    db.session.commit()
+
+
+def update_user(fullname, username, email, phone, address):
+    current_user.fullname = fullname
+    current_user.username = username
+    current_user.email = email
+    current_user.phone = phone
+    current_user.address = address
+
+    db.session.commit()
+
+
+def get_receipt_by_current_user():
+    return db.session.query(Receipt.id.label('id'),
+                            User.fullname.label('name'),
+                            func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price).label('total_amount'),
+                            Receipt.created_date.label('created_date')
+                            ).join(User, User.id.__eq__(Receipt.user_id)
+                                   ).join(ReceiptDetails, ReceiptDetails.receipt_id.__eq__(Receipt.id)
+                                          ).group_by(User.username, Receipt.id
+                                                     ).filter(User.id.__eq__(current_user.id)).all()
+
+
+def get_revenue_by_cate():
+    return db.session.query(Category.id.label('cate_id'),
+                            Category.name.label('cate_name'),
+                            func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price).label('total_revenue')
+                            ).join(Book, Book.category_id.__eq__(Category.id)
+                                   ).join(ReceiptDetails, ReceiptDetails.receipt_id.__eq__(Book.id)
+                                          ).group_by('cate_id', 'cate_name').all()
+
+
+def update_book_quantity(book_id, quantity):
+    book = get_book_by_id(book_id)
+    book.count -= quantity
+
     db.session.commit()

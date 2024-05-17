@@ -49,21 +49,6 @@ class UserView(AuthenticatedView):
     }
 
 
-# class StatsView(BaseView):
-#     @expose('/')
-#     def index(self):
-#         revenue_by_prods = dao.stats_revenue_by_product(kw=request.args.get('kw'))
-#         revenue_by_period = dao.stats_revenue_by_period(year=request.args.get('year', datetime.now().year),
-#                                                         period=request.args.get('period', 'month'))
-#
-#         return self.render('admin/stats.html',
-#                            revenue_by_prods=revenue_by_prods,
-#                            revenue_by_period=revenue_by_period)
-#
-#     def is_accessible(self):
-#         return current_user.is_authenticated
-
-
 class LogoutView(BaseView):
     @expose('/')
     def index(self):
@@ -78,8 +63,9 @@ class MyAdminIndexView(AdminIndexView):
     @expose('/')
     def index(self):
         stats = dao.count_books_by_cate()
+        revenue_by_cate = dao.get_revenue_by_cate()
         count = dao.get_count()
-        return self.render('admin/index.html', stats=stats, count=count)
+        return self.render('admin/index.html', stats=stats, count=count, rev_cat=revenue_by_cate)
 
 
 admin = Admin(app, name='Book Administrators', template_mode='bootstrap4', index_view=MyAdminIndexView())

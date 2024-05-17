@@ -31,8 +31,10 @@ def process_admin_login():
     password = request.form.get('password')
     u = dao.auth_user(username=username, password=password)
     if u:
-        login_user(user=u)
-
+        if u.user_role == UserRole.ADMIN:
+            login_user(user=u)
+        else:
+            redirect('/')
     return redirect('/admin')
 
 
@@ -168,6 +170,8 @@ def pay():
     cart = session.get('cart')
     try:
         dao.add_receipt(cart)
+        for k, v in cart.items():
+            dao.update_book_quantity(k, v['quantity'])
     except Exception as ex:
         print(ex)
         return jsonify({'status': 500})
@@ -182,6 +186,29 @@ def add_comment(id):
     c = dao.add_comment(content=data.get('content'), book_id=id)
 
     return jsonify({'status': 200})
+
+
+@app.route('/user/user-info')
+def user_info():
+    return render_template('user-info.html')
+
+
+@app.route('/user/user-receipt')
+def user_receipt():
+    receipts = dao.get_receipt_by_current_user()
+    return render_template('user-receipt.html', receipts=receipts)
+
+
+@app.route('/update-user', methods=['post'])
+def update_user():
+    username = request.form.get('username')
+    fullname = request.form.get('fullname')
+    phone = request.form.get('phone')
+    email = request.form.get('email')
+    address = request.form.get('address')
+    dao.update_user(fullname=fullname, username=username, phone=phone, email=email, address=address)
+
+    return redirect('/')
 
 
 if __name__ == "__main__":
