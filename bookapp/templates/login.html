@@ -3,6 +3,11 @@
 {%block title %}Đăng nhập{% endblock %}
 
 {% block content %}
+{% if err_msg %}
+<div class="alert alert-danger mt-3" role="alert">
+    {{err_msg}}
+</div>
+{% endif %}
 <div class="card w-50 mx-auto mt-3">
     <div class="card-body">
         <div class="card-title">
@@ -21,7 +26,6 @@
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary">Đăng nhập</button>
                 </div>
-
             </form>
         </div>
     </div>
