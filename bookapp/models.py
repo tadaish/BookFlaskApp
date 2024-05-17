@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     comments = relationship('Comment', backref='user', lazy=True)
 
     def __str__(self):
-        return self.name
+        return self.fullname
 
 
 class Category(db.Model):

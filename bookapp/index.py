@@ -31,10 +31,8 @@ def process_admin_login():
     password = request.form.get('password')
     u = dao.auth_user(username=username, password=password)
     if u:
-        if u.user_role == UserRole.ADMIN:
-            login_user(user=u)
-        else:
-            redirect('/')
+        login_user(user=u)
+
     return redirect('/admin')
 
 

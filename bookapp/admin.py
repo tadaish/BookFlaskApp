@@ -1,11 +1,10 @@
 from flask_admin import Admin, expose, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import BaseView
-from bookapp.models import Category, Book, UserRole, User
+from bookapp.models import Category, Book, UserRole, User, Receipt, ReceiptDetails
 from bookapp import app, db, dao
 from flask_login import logout_user, current_user
-from flask import redirect, request
-from datetime import datetime
+from flask import redirect
 
 
 class AuthenticatedView(ModelView):
@@ -49,6 +48,28 @@ class UserView(AuthenticatedView):
     }
 
 
+class ReceiptView(AuthenticatedView):
+    column_list = ['id', 'user_id', 'Tổng tiền', 'active', 'created_date']
+
+    def total_amount_formatter(view, context, model, name):
+        total = sum(item.quantity * item.unit_price for item in model.details)
+        return f"{total:,.0f} đ"
+
+    def user_fullname_formatter(view, context, model, name):
+        return model.user.fullname
+
+    column_formatters = {
+        'user_id': user_fullname_formatter,
+        'Tổng tiền': total_amount_formatter
+    }
+
+    column_labels = {
+        'user_id': 'Tên khách hàng',
+        'active': 'Trạng thái',
+        'created_date': 'Ngày tạo',
+    }
+
+
 class LogoutView(BaseView):
     @expose('/')
     def index(self):
@@ -72,4 +93,5 @@ admin = Admin(app, name='Book Administrators', template_mode='bootstrap4', index
 admin.add_view(CategoryView(Category, db.session))
 admin.add_view(BookView(Book, db.session))
 admin.add_view(UserView(User, db.session))
+admin.add_view(ReceiptView(Receipt, db.session))
 admin.add_view(LogoutView(name='Đăng xuất'))
